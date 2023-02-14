@@ -1,17 +1,31 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
+import ReactDOM from 'react-dom';
+import { legacy_createStore as createStore, compose, applyMiddleware } from "redux";
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import thunk from "redux-thunk";
+import { Provider } from 'react-redux';
+import { rootReducer } from './store';
+import 'react-loading-skeleton/dist/skeleton.css'
+import { ThemeProvider } from '@saleor/macaw-ui';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+export const store = createStore(rootReducer, compose(applyMiddleware(thunk), 
+    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()));
+
+const root = document.getElementById('root');
+
+const breakpoints = {
+    keys: ["xs", "sm", "md", "lg", "xl"],
+    values: { lg: 1680, md: 1280, sm: 600, xl: 1920, xs: 0 },
+};
+
+const themeOverrides = {
+    breakpoints,
+};
+
+ReactDOM.render(
+    <ThemeProvider themeOverrides={themeOverrides}>
+        <Provider store={store}>
+            <App/>
+        </Provider>
+    </ThemeProvider>, root
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
